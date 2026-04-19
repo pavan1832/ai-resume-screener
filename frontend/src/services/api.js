@@ -1,8 +1,10 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 120000, // 2 min for AI processing
+  baseURL: import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : '/api',
+  timeout: 120000,
 })
 
 // ─── Jobs ──────────────────────────────────────────────────────────────────
