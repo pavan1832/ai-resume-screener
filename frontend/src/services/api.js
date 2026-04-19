@@ -4,7 +4,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL
     ? `${import.meta.env.VITE_API_URL}/api`
     : '/api',
-  timeout: 120000,
+  timeout: 300000, // increase from 120s to 5 minutes
 })
 
 // ─── Jobs ──────────────────────────────────────────────────────────────────
