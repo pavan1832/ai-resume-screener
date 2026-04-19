@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import asyncio
 import uvicorn
 
 from routes import jobs, candidates, export
@@ -10,6 +11,12 @@ from utils.db import connect_db, close_db, db_connected
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_db()
+    # Pre-load AI model in background so first upload doesn't timeout
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(
+        None,
+        lambda: __import__('services.ai_service', fromlist=['get_model']).get_model()
+    )
     yield
     await close_db()
 
@@ -23,11 +30,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://ai-resume-screener-inky.vercel.app/",  # add your Vercel URL
-        "*",  # or keep this for simplicity
-    ],
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,4 +64,3 @@ async def health():
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-
