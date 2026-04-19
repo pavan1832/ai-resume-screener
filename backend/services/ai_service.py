@@ -417,3 +417,10 @@ def match_resume_to_jd(
     )
 
     return result
+
+
+# ─── Pre-load model on startup ────────────────────────────────────────────
+import threading
+def _preload():
+    get_model()
+threading.Thread(target=_preload, daemon=True).start()
